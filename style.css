@@ -1,0 +1,16 @@
+.tetris-grid {
+    width: 200px;
+    height: 400px;
+    display: flex;
+    flex-wrap: wrap;
+    background-color: black;
+}
+
+.tetris-grid div {
+    width: 20px;
+    height: 20px;
+}
+
+.tetromino {
+    background-color: blue;
+}
