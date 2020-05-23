@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     const tetrisGrid = document.querySelector('.tetris-grid');
     let squares = Array.from(document.querySelectorAll('.tetris-grid div'));
-    const DisplayScore = document.querySelector('#score');
-    const StartBtn = document.querySelector('#start-game');
+    const displayScore = document.querySelector('#score');
+    const startBtn = document.querySelector('#start-game');
     const w = 10;
     
     // Tetrominoes
@@ -12,7 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
         [1, w + 1, w * 2 + 1, 2],
         [w, w + 1, w + 2, w * 2 + 2],
         [1, w + 1, w * 2 + 1, w * 2]
-        
     ];
 
     const jT = [
@@ -84,6 +83,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.keyCode === 37) {
             moveLeft();
         }
+        if (e.keyCode === 38) {
+            rotate();
+        }
+        if (e.keyCode === 39) {
+            moveRight();
+        }
+        if (e.keyCode === 40) {
+            moveDown();
+        }
     }
     document.addEventListener('keyup', control)
 
@@ -108,13 +116,37 @@ document.addEventListener('DOMContentLoaded', () => {
         undraw()
         const isAtLeftEdge = curr.some(i => (currPos + i) % w === 0)
         if (!isAtLeftEdge) {
-            currPos -= 1
+            currPos -= 1;
         } 
         if (curr.some(i => squares[currPos + i].classList.contains('taken'))) {
-            currPos += 1
+            currPos += 1;
         }
-        draw()
+        draw();
+    }
+
+    function moveRight() {
+        undraw()
+        const isAtRightEdge = curr.some(i => (currPos + i) % w === w - 1)
+        if (!isAtRightEdge) {
+            currPos += 1;
+        } 
+        if (curr.some(i => squares[currPos + i].classList.contains('taken'))) {
+            currPos -= 1;
+        }
+        draw();
     }
     
+    function rotate() {
+        undraw();
+        currRotate ++;
+        console.log(currRotate, r)
+        if (currRotate === curr.length) {
+             currRotate = 0;
+        }
+        curr = tetrominoes[r][currRotate];
+        draw();
+    }
+
+    let displaySquares = document.querySelectorAll('')
 })
 
