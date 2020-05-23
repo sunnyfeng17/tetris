@@ -4,8 +4,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const displayScore = document.querySelector('#score');
     const startBtn = document.querySelector('#start-game');
     const w = 10;
-    
-    // Tetrominoes
+    let nextR = 0;
+    let timerId;
 
     const lT = [
         [0, w, w + 1, w + 2],
@@ -60,10 +60,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currPos = 4
     let currRotate = 0
+
     let r = Math.floor(Math.random() * tetrominoes.length)
     let curr = tetrominoes[r][currRotate]
-
-    draw()
 
     function draw() {
         curr.forEach(i => {
@@ -77,23 +76,21 @@ document.addEventListener('DOMContentLoaded', () => {
         })
     }
 
-    timerId = setInterval(moveDown, 1000);
-
     function control(e) {
         if (e.keyCode === 37) {
             moveLeft();
         }
-        if (e.keyCode === 38) {
+        else if (e.keyCode === 38) {
             rotate();
         }
-        if (e.keyCode === 39) {
+        else if (e.keyCode === 39) {
             moveRight();
         }
-        if (e.keyCode === 40) {
+        else if (e.keyCode === 40) {
             moveDown();
         }
     }
-    document.addEventListener('keyup', control)
+    document.addEventListener('keyup', control);
 
     function moveDown() {
         undraw();
@@ -104,11 +101,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function freeze() {
         if (curr.some(i => squares[currPos + i + w].classList.contains('taken'))) {
-            curr.forEach(i =>squares[currPos + i].classList.add('taken'));
-            r = Math.floor(Math.random() * tetrominoes.length);
+            curr.forEach(i => squares[currPos + i].classList.add('taken'));
+            r = nextR
+            nextR = Math.floor(Math.random() * tetrominoes.length);
             curr = tetrominoes[r][currRotate];
             currPos = 4;
             draw();
+            displayShape();
         }
     }
 
@@ -139,7 +138,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function rotate() {
         undraw();
         currRotate ++;
-        console.log(currRotate, r)
         if (currRotate === curr.length) {
              currRotate = 0;
         }
@@ -147,6 +145,40 @@ document.addEventListener('DOMContentLoaded', () => {
         draw();
     }
 
-    let displaySquares = document.querySelectorAll('')
+    const displaySquares = document.querySelectorAll('.upcoming-grid div')
+    const displayWidth  = 4
+    const displayIndex   = 0
+
+    const nextTetrominoes = [
+        [0, displayWidth , displayWidth  + 1, displayWidth  + 2], // L
+        [2, displayWidth  + 2, displayWidth  + 1, displayWidth ], // J
+        [1, 2, displayWidth , displayWidth  + 1], // Z
+        [0, 1, displayWidth  + 1, displayWidth  + 2], // S
+        [1, displayWidth , displayWidth  + 1, displayWidth  + 2], // T
+        [0, 1, displayWidth , displayWidth  + 1], // O
+        [1, displayWidth  + 1, displayWidth  * 2 + 1, displayWidth  * 3 + 1] // I
+    ]
+
+    function displayShape() {
+        displaySquares.forEach(square => {
+            square.classList.remove('tetromino')
+        })
+        nextTetrominoes[nextR].forEach(i => {
+            displaySquares[displayIndex + i].classList.add('tetromino');
+        })
+    }
+
+    startBtn.addEventListener('click', () => {
+        if (timerId) { // Pause Game
+            clearInterval(timerId);
+            timerId = null;
+        }
+        else {
+            draw();
+            timerId = setInterval(moveDown, 1000);
+            nextR = Math.floor(Math.random() * tetrominoes.length);
+            displayShape();
+        }
+    })
 })
 
