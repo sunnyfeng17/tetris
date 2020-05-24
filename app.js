@@ -6,6 +6,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const w = 10;
     let nextR = 0;
     let timerId;
+    let score = 0;
+    let linesCleared = 0;
+    const colours = [
+        'blue',
+        'orange',
+        'red',
+        'green',
+        'purple',
+        'yellow',
+        'cyan'
+    ]
 
     const lT = [
         [0, w, w + 1, w + 2],
@@ -67,12 +78,14 @@ document.addEventListener('DOMContentLoaded', () => {
     function draw() {
         curr.forEach(i => {
             squares[currPos + i].classList.add('tetromino');
+            squares[currPos + i].style.backgroundColor = colours[r]
         })
     }
 
     function undraw() {
         curr.forEach(i => {
             squares[currPos + i].classList.remove('tetromino');
+            squares[currPos + i].style.backgroundColor = ''
         })
     }
 
@@ -108,6 +121,8 @@ document.addEventListener('DOMContentLoaded', () => {
             currPos = 4;
             draw();
             displayShape();
+            addScore();
+            gameOver();
         }
     }
 
@@ -160,11 +175,14 @@ document.addEventListener('DOMContentLoaded', () => {
     ]
 
     function displayShape() {
-        displaySquares.forEach(square => {
-            square.classList.remove('tetromino')
+        displaySquares.forEach(s => {
+            s.classList.remove('tetromino');
+            s.style.backgroundColor = ''
+
         })
         nextTetrominoes[nextR].forEach(i => {
             displaySquares[displayIndex + i].classList.add('tetromino');
+            displaySquares[displayIndex + i].style.backgroundColor = colours[nextR];
         })
     }
 
@@ -180,5 +198,31 @@ document.addEventListener('DOMContentLoaded', () => {
             displayShape();
         }
     })
+
+    function addScore(){
+        for (let i = 0; i < 199; i += w) {
+            const row = [i, i + 1, i + 2, i + 3, i + 4, i + 5, i + 6, i + 7, i + 8, i + 9];
+            if (row.every(i => squares[i].classList.contains('taken'))) {
+                score += 10;
+                linesCleared += 1;
+                displayScore.innerHTML = score;
+                row.forEach(i => {
+                    squares[i].classList.remove('taken');
+                    squares[i].classList.remove('tetromino');
+                    squares[i].style.backgroundColor = ''
+                })
+                const squaresRemoved = squares.splice(i, w);
+                squares = squaresRemoved.concat(squares)
+                squares.forEach(s => tetrisGrid.appendChild(s))
+            }
+        }
+    }
+
+    function gameOver() {
+        if (curr.some(i => squares[currPos + i].classList.contains('taken'))){
+            displayScore.innerHTML = "GAME OVER";
+            clearInterval(timerId)
+        }
+    }
 })
 
