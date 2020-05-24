@@ -1,9 +1,34 @@
 document.addEventListener('DOMContentLoaded', () => {
     const tetrisGrid = document.querySelector('.tetris-grid');
+
+    // Create 10 x 20 Grid
+    for (let i = 0; i < 200; i++) {
+        tetrisGrid.appendChild(document.createElement('div'));
+    }
+
+    // Create 10 x 1 to help freeze tetrominoes
+    for (let i = 200; i < 210; i++) {
+        stop = tetrisGrid.appendChild(document.createElement('div'));
+        stop.className = 'taken';
+    }
+
     let squares = Array.from(document.querySelectorAll('.tetris-grid div'));
+    const w = 10;
+
+
+    // Create 4 by 4 grid for displaying next tetromino
+    const upcomingGrid = document.querySelector('.upcoming-grid');
+    for (let i = 0; i < 16; i++) {
+        upcomingGrid.appendChild(document.createElement('div'));
+    }
+
+    const upcomingSquares = document.querySelectorAll('.upcoming-grid div')
+    const displayW  = 4
+    const displayI   = 0
+
+
     const displayScore = document.querySelector('#score');
     const startBtn = document.querySelector('#start-game');
-    const w = 10;
     let nextR = 0;
     let timerId;
     let score = 0;
@@ -160,29 +185,25 @@ document.addEventListener('DOMContentLoaded', () => {
         draw();
     }
 
-    const displaySquares = document.querySelectorAll('.upcoming-grid div')
-    const displayWidth  = 4
-    const displayIndex   = 0
-
-    const nextTetrominoes = [
-        [0, displayWidth , displayWidth  + 1, displayWidth  + 2], // L
-        [2, displayWidth  + 2, displayWidth  + 1, displayWidth ], // J
-        [1, 2, displayWidth , displayWidth  + 1], // Z
-        [0, 1, displayWidth  + 1, displayWidth  + 2], // S
-        [1, displayWidth , displayWidth  + 1, displayWidth  + 2], // T
-        [0, 1, displayWidth , displayWidth  + 1], // O
-        [1, displayWidth  + 1, displayWidth  * 2 + 1, displayWidth  * 3 + 1] // I
+    const upcomingTetrominoes = [
+        [0, displayW , displayW  + 1, displayW  + 2], // L
+        [2, displayW  + 2, displayW  + 1, displayW ], // J
+        [1, 2, displayW , displayW  + 1], // Z
+        [0, 1, displayW  + 1, displayW  + 2], // S
+        [1, displayW , displayW  + 1, displayW  + 2], // T
+        [0, 1, displayW , displayW  + 1], // O
+        [1, displayW  + 1, displayW  * 2 + 1, displayW  * 3 + 1] // I
     ]
 
     function displayShape() {
-        displaySquares.forEach(s => {
+        upcomingSquares.forEach(s => {
             s.classList.remove('tetromino');
             s.style.backgroundColor = ''
 
         })
-        nextTetrominoes[nextR].forEach(i => {
-            displaySquares[displayIndex + i].classList.add('tetromino');
-            displaySquares[displayIndex + i].style.backgroundColor = colours[nextR];
+        upcomingTetrominoes[nextR].forEach(i => {
+            upcomingSquares[displayI + i].classList.add('tetromino');
+            upcomingSquares[displayI + i].style.backgroundColor = colours[nextR];
         })
     }
 
