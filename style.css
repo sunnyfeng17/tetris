@@ -1,5 +1,23 @@
+body {
+    background-color: #000000;
+    color: #FFFFFF;
+    text-align: center;
+    margin: auto;
+}
+
+.wrapper {
+    margin: 0 auto 0 auto;
+    padding: 5em 0 5em 0;
+}
+
+.title {
+    width: 20em;
+}
+
 .container {
+    margin-top: 5em;
     display: flex;
+    justify-content: center;
 }
 
 .tetris-grid {
@@ -7,7 +25,9 @@
     height: 400px;
     display: flex;
     flex-wrap: wrap;
-    background-color: black;
+    align-items: center;
+    background-color: #FFFFFF;
+    align-items: center; 
 }
 
 .tetris-grid div {
@@ -15,16 +35,12 @@
     height: 20px;
 }
 
-.tetromino {
-    background-color: blue;
-}
-
 .upcoming-grid {
     width: 80px;
     height: 80px;
     display: flex;
     flex-wrap: wrap;
-    background-color: black;
+    background-color: #FFFFFF;
     margin-left: 50px;
 }
 

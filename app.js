@@ -1,47 +1,47 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const tetrisGrid = document.querySelector('.tetris-grid');
+// Base code follows this tutorial: https://www.youtube.com/watch?v=rAUn1Lom6dw
 
-    // Create 10 x 20 Grid
+document.addEventListener('DOMContentLoaded', () => {
+   
+    const tetrisGrid = document.querySelector('.tetris-grid');
+    const upcomingGrid = document.querySelector('.upcoming-grid');
+
+    // Create 10 x 20 grid for main game
     for (let i = 0; i < 200; i++) {
         tetrisGrid.appendChild(document.createElement('div'));
     }
-
-    // Create 10 x 1 to help freeze tetrominoes
+    // Create 10 x 1 grid to help freeze tetrominoes
     for (let i = 200; i < 210; i++) {
         stop = tetrisGrid.appendChild(document.createElement('div'));
         stop.className = 'taken';
     }
-
-    let squares = Array.from(document.querySelectorAll('.tetris-grid div'));
-    const w = 10;
-
-
-    // Create 4 by 4 grid for displaying next tetromino
-    const upcomingGrid = document.querySelector('.upcoming-grid');
+    // Create 4 x 4 grid for displaying next tetromino
     for (let i = 0; i < 16; i++) {
         upcomingGrid.appendChild(document.createElement('div'));
     }
 
-    const upcomingSquares = document.querySelectorAll('.upcoming-grid div')
-    const displayW  = 4
-    const displayI   = 0
+    let squares = Array.from(document.querySelectorAll('.tetris-grid div'));
+    const upcomingSquares = document.querySelectorAll('.upcoming-grid div');
 
-
-    const displayScore = document.querySelector('#score');
     const startBtn = document.querySelector('#start-game');
-    let nextR = 0;
-    let timerId;
+    const displayScore = document.querySelector('#score');
+
+    const w = 10; // Main width
+    const displayW  = 4 // Next width
+    const displayI   = 0
     let score = 0;
     let linesCleared = 0;
+    let nextR = 0;
+    let timerId;
+    
     const colours = [
-        'blue',
-        'orange',
-        'red',
-        'green',
-        'purple',
-        'yellow',
-        'cyan'
-    ]
+        'url(images/blue.png)',
+        'url(images/orange.png)',
+        'url(images/red.png)',
+        'url(images/green.png)',
+        'url(images/purple.png)',
+        'url(images/yellow.png)',
+        'url(images/cyan.png)'
+    ];
 
     const lT = [
         [0, w, w + 1, w + 2],
@@ -94,23 +94,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const tetrominoes = [lT, jT, zT, sT, tT, oT, iT];
 
-    let currPos = 4
-    let currRotate = 0
+    let currPos = 4;
+    let currRotate = 0;
 
-    let r = Math.floor(Math.random() * tetrominoes.length)
-    let curr = tetrominoes[r][currRotate]
+    let r = Math.floor(Math.random() * tetrominoes.length);
+    let curr = tetrominoes[r][currRotate];
 
     function draw() {
         curr.forEach(i => {
-            squares[currPos + i].classList.add('tetromino');
-            squares[currPos + i].style.backgroundColor = colours[r]
+            squares[currPos + i].style.backgroundImage = colours[r];
         })
     }
 
     function undraw() {
         curr.forEach(i => {
-            squares[currPos + i].classList.remove('tetromino');
-            squares[currPos + i].style.backgroundColor = ''
+            squares[currPos + i].style.backgroundImage = '';
         })
     }
 
@@ -128,7 +126,8 @@ document.addEventListener('DOMContentLoaded', () => {
             moveDown();
         }
     }
-    document.addEventListener('keyup', control);
+    
+    document.addEventListener('keydown', control)
 
     function moveDown() {
         undraw();
@@ -177,7 +176,15 @@ document.addEventListener('DOMContentLoaded', () => {
     
     function rotate() {
         undraw();
-        currRotate ++;
+        const overflowLeft = curr.some(i => (currPos + i) % w === 9)
+        const overflowRight = curr.some(i => (currPos + i) % w === 0)
+        if (overflowLeft) {
+            currPos--;
+        }
+        if (overflowRight) {
+            currPos++;
+        }
+        currRotate++;
         if (currRotate === curr.length) {
              currRotate = 0;
         }
@@ -197,13 +204,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function displayShape() {
         upcomingSquares.forEach(s => {
-            s.classList.remove('tetromino');
-            s.style.backgroundColor = ''
-
+            s.style.backgroundImage = ''
         })
         upcomingTetrominoes[nextR].forEach(i => {
-            upcomingSquares[displayI + i].classList.add('tetromino');
-            upcomingSquares[displayI + i].style.backgroundColor = colours[nextR];
+            upcomingSquares[displayI + i].style.backgroundImage = colours[nextR];
         })
     }
 
@@ -229,8 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 displayScore.innerHTML = score;
                 row.forEach(i => {
                     squares[i].classList.remove('taken');
-                    squares[i].classList.remove('tetromino');
-                    squares[i].style.backgroundColor = ''
+                    squares[i].style.backgroundImage = ''
                 })
                 const squaresRemoved = squares.splice(i, w);
                 squares = squaresRemoved.concat(squares)
