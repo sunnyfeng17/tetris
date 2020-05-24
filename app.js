@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const startBtn = document.querySelector('#start-game');
     const displayScore = document.querySelector('#score');
+    const displayLine = document.querySelector('#line');
 
     const w = 10; // Main width
     const displayW  = 4 // Next width
@@ -32,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let linesCleared = 0;
     let nextR = 0;
     let timerId;
+
     
     const colours = [
         'url(images/blue.png)',
@@ -231,6 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 score += 10;
                 linesCleared += 1;
                 displayScore.innerHTML = score;
+                displayLine.innerHTML = linesCleared;
                 row.forEach(i => {
                     squares[i].classList.remove('taken');
                     squares[i].style.backgroundImage = ''
@@ -244,7 +247,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function gameOver() {
         if (curr.some(i => squares[currPos + i].classList.contains('taken'))){
-            displayScore.innerHTML = "GAME OVER";
+            displayScore.innerHTML = "GAMEOVER";
             clearInterval(timerId)
         }
     }
