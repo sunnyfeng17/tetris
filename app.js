@@ -33,8 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let linesCleared = 0;
     let nextR = 0;
     let timerId;
-    let tryFreeze = false;
-
     
     const colours = [
         'url(images/blue.png)',
@@ -125,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (e.keyCode === 39) {
             moveRight();
         }
-        else if (e.keyCode === 40 & !tryFreeze) {
+        else if (e.keyCode === 40) {
             moveDown();
         }
     }
@@ -141,27 +139,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function freeze() {
         if (curr.some(i => squares[currPos + i + w].classList.contains('taken'))) {
-            tryFreeze = true;
-            clearInterval(timerId);
-            setTimeout(function(){ 
-                if (curr.some(i => squares[currPos + i + w].classList.contains('taken'))) {
-                    tryFreeze = false;
-                    setInterval(timerId);
-                    curr.forEach(i => squares[currPos + i].classList.add('taken'));
-                    r = nextR
-                    nextR = Math.floor(Math.random() * tetrominoes.length);
-                    curr = tetrominoes[r][currRotate];
-                    currPos = 4;
-                    draw();
-                    displayShape();
-                    addScore();
-                    gameOver();
-                }
-            }, 100);
+            setInterval(timerId);
+            curr.forEach(i => squares[currPos + i].classList.add('taken'));
+            r = nextR
+            nextR = Math.floor(Math.random() * tetrominoes.length);
+            curr = tetrominoes[r][currRotate];
+            currPos = 4;
+            draw();
+            displayShape();
+            addScore();
+            gameOver();
         }
-
-        
     }
+
 
     function moveLeft() {
         undraw()
