@@ -33,6 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let linesCleared = 0;
     let nextR = 0;
     let timerId;
+
+    let playing = false;
     
     const colours = [
         'url(images/blue.png)',
@@ -114,17 +116,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function control(e) {
-        if (e.keyCode === 37) {
-            moveLeft();
-        }
-        else if (e.keyCode === 38) {
-            rotate();
-        }
-        else if (e.keyCode === 39) {
-            moveRight();
-        }
-        else if (e.keyCode === 40) {
-            moveDown();
+        if (playing) {
+            if (e.keyCode === 37) {
+                moveLeft();
+            }
+            else if (e.keyCode === 38) {
+                rotate();
+            }
+            else if (e.keyCode === 39) {
+                moveRight();
+            }
+            else if (e.keyCode === 40) {
+                moveDown();
+            }
         }
     }
     
@@ -218,8 +222,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (timerId) { // Pause Game
             clearInterval(timerId);
             timerId = null;
+            playing = false;
         }
         else {
+            playing = true;
             draw();
             timerId = setInterval(moveDown, 1000);
             nextR = Math.floor(Math.random() * tetrominoes.length);
