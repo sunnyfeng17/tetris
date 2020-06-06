@@ -7,7 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Create 10 x 20 grid for main game
     for (let i = 0; i < 200; i++) {
-        tetrisGrid.appendChild(document.createElement('div'));
+        main = tetrisGrid.appendChild(document.createElement('div'));
+        main.className = 'main';
     }
     // Create 10 x 1 grid to help freeze tetrominoes
     for (let i = 200; i < 210; i++) {
@@ -222,23 +223,48 @@ document.addEventListener('DOMContentLoaded', () => {
     startPauseBtn.addEventListener('click', () => {
         if (!gameover) {
             if (playing) {
-                playing = false;
-                startPauseBtn.classList.remove('fa-pause') 
-                startPauseBtn.classList.add('fa-play')
-                clearInterval(timerId);
-                timerId = null;
+                pauseGame()
             }
             else {
-                playing = true;
-                startPauseBtn.classList.remove('fa-play')
-                startPauseBtn.classList.add('fa-pause')
-                draw();
-                timerId = setInterval(moveDown, 1000);
-                nextR = Math.floor(Math.random() * tetrominoes.length);
-                displayShape();
+                startGame()
             }
         }
+        else { 
+            restartGame()
+        }
     })
+
+    function startGame() {
+        playing = true;
+        startPauseBtn.classList.remove('fa-play');
+        startPauseBtn.classList.add('fa-pause');
+        draw();
+        timerId = setInterval(moveDown, 1000);
+        nextR = Math.floor(Math.random() * tetrominoes.length);
+        displayShape();
+    }
+
+    function pauseGame() {
+        playing = false;
+        startPauseBtn.classList.remove('fa-pause');
+        startPauseBtn.classList.add('fa-play');
+        clearInterval(timerId);
+        timerId = null;
+    }
+
+    function restartGame() {
+        const toClear = document.querySelectorAll('.main.taken');
+        toClear.forEach(i => {
+            i.classList.remove('taken');
+            i.style.backgroundImage = ''
+        })
+        gameover = false;
+        score = 0;
+        linesCleared = 0;
+        displayScore.innerHTML = score;
+        displayLine.innerHTML = linesCleared;
+        startGame();
+    }
 
     function addScore(){
         for (let i = 0; i < 199; i += w) {
@@ -260,13 +286,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function gameOver() {
-        console.log(curr.some(i => squares[currPos + i].classList.contains('taken')))
         if (curr.some(i => squares[currPos + i].classList.contains('taken'))){
-            playing = false;
+            startPauseBtn.classList.remove('fa-pause');
+            startPauseBtn.classList.add('fa-play');
             gameover = true;
-            displayScore.innerHTML = "GAMEOVER";
+            playing = false;
+            displayScore.innerHTML = "<span style='color: red'>GAMEOVER</span>";
             clearInterval(timerId)
         }
     }
+
+
 })
 
