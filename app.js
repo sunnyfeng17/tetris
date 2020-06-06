@@ -23,17 +23,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const upcomingSquares = document.querySelectorAll('.upcoming-grid div');
 
     const startPauseBtn = document.querySelector('#start-pause-game');
+    const displayScore = document.querySelector('#score');
     const displayLine = document.querySelector('#line');
 
     const w = 10; // Main width
     const displayW  = 4 // Next width
-    const displayI   = 0
+    const displayI  = 0
     let score = 0;
     let linesCleared = 0;
     let nextR = 0;
     let timerId;
 
     let playing = false;
+    let gameover = false;
     
     const colours = [
         'url(images/blue.png)',
@@ -218,21 +220,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     startPauseBtn.addEventListener('click', () => {
-        if (playing) {
-            playing = false;
-            startPauseBtn.classList.remove('fa-pause') 
-            startPauseBtn.classList.add('fa-play')
-            clearInterval(timerId);
-            timerId = null;
-        }
-        else {
-            playing = true;
-            startPauseBtn.classList.remove('fa-play')
-            startPauseBtn.classList.add('fa-pause')
-            draw();
-            timerId = setInterval(moveDown, 1000);
-            nextR = Math.floor(Math.random() * tetrominoes.length);
-            displayShape();
+        if (!gameover) {
+            if (playing) {
+                playing = false;
+                startPauseBtn.classList.remove('fa-pause') 
+                startPauseBtn.classList.add('fa-play')
+                clearInterval(timerId);
+                timerId = null;
+            }
+            else {
+                playing = true;
+                startPauseBtn.classList.remove('fa-play')
+                startPauseBtn.classList.add('fa-pause')
+                draw();
+                timerId = setInterval(moveDown, 1000);
+                nextR = Math.floor(Math.random() * tetrominoes.length);
+                displayShape();
+            }
         }
     })
 
@@ -256,9 +260,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function gameOver() {
+        console.log(curr.some(i => squares[currPos + i].classList.contains('taken')))
         if (curr.some(i => squares[currPos + i].classList.contains('taken'))){
             playing = false;
-            displayScore.innerHTML = "GAMEOVER <br> <button>Play again</button>";
+            gameover = true;
+            displayScore.innerHTML = "GAMEOVER";
             clearInterval(timerId)
         }
     }
