@@ -22,9 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let squares = Array.from(document.querySelectorAll('.tetris-grid div'));
     const upcomingSquares = document.querySelectorAll('.upcoming-grid div');
 
-    const startBtn = document.querySelector('#start-game');
-    const pauseBtn = document.querySelector('#pause-game');
-    const displayScore = document.querySelector('#score');
+    const startPauseBtn = document.querySelector('#start-pause-game');
     const displayLine = document.querySelector('#line');
 
     const w = 10; // Main width
@@ -219,21 +217,22 @@ document.addEventListener('DOMContentLoaded', () => {
         })
     }
 
-    startBtn.addEventListener('click', () => {
-        if (!playing) {
+    startPauseBtn.addEventListener('click', () => {
+        if (playing) {
+            playing = false;
+            startPauseBtn.classList.remove('fa-pause') 
+            startPauseBtn.classList.add('fa-play')
+            clearInterval(timerId);
+            timerId = null;
+        }
+        else {
             playing = true;
+            startPauseBtn.classList.remove('fa-play')
+            startPauseBtn.classList.add('fa-pause')
             draw();
             timerId = setInterval(moveDown, 1000);
             nextR = Math.floor(Math.random() * tetrominoes.length);
             displayShape();
-        }
-    })
-
-    pauseBtn.addEventListener('click', () => {
-        if (playing) {
-            playing = false;
-            clearInterval(timerId);
-            timerId = null;
         }
     })
 
@@ -258,7 +257,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function gameOver() {
         if (curr.some(i => squares[currPos + i].classList.contains('taken'))){
-            displayScore.innerHTML = "GAMEOVER";
+            playing = false;
+            displayScore.innerHTML = "GAMEOVER <br> <button>Play again</button>";
             clearInterval(timerId)
         }
     }

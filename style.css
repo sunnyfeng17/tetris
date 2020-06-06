@@ -14,8 +14,8 @@ body {
     width: 20em;
 }
 
-#start-game {
-    margin-top: 2em;
+#start-pause-game {
+    font-size: 3em;
 }
 
 .container {
