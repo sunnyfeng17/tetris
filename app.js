@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const upcomingSquares = document.querySelectorAll('.upcoming-grid div');
 
     const startBtn = document.querySelector('#start-game');
+    const pauseBtn = document.querySelector('#pause-game');
     const displayScore = document.querySelector('#score');
     const displayLine = document.querySelector('#line');
 
@@ -219,17 +220,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     startBtn.addEventListener('click', () => {
-        if (timerId) { // Pause Game
-            clearInterval(timerId);
-            timerId = null;
-            playing = false;
-        }
-        else {
+        if (!playing) {
             playing = true;
             draw();
             timerId = setInterval(moveDown, 1000);
             nextR = Math.floor(Math.random() * tetrominoes.length);
             displayShape();
+        }
+    })
+
+    pauseBtn.addEventListener('click', () => {
+        if (playing) {
+            playing = false;
+            clearInterval(timerId);
+            timerId = null;
         }
     })
 

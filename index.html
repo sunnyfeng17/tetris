@@ -2,7 +2,9 @@
     <head>
         <meta charset="utf-8">
         <script src="app.js" charset="utf-8"></script>
-        <link rel="stylesheet" href="style.css"></link>
+        <link href="fontawesome/css/fontawesome.css" rel="stylesheet">
+        <link href="fontawesome/css/solid.css" rel="stylesheet">
+        <link href="style.css" rel="stylesheet">
         <title>Tetris</title>
     </head>
     <body>
@@ -11,7 +13,8 @@
             
             <div class="container">
                 <div class="left-grid">
-                    <button id="start-game">Start/Pause</button>
+                    <button id="start-game"><i class="fas fa-play"></i></button>
+                    <button id="pause-game"><i class="fas fa-pause"></i></button>
                     <h1>Score: <br /> <span id="score">0</span></h1>
                     <h1>Lines: <br /> <span id="line">0</span></h1>
                 </div>
