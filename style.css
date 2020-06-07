@@ -18,6 +18,13 @@ body {
 #start-pause-game {
     font-size: 3em;
     padding-top: 0.5em;
+    cursor: pointer;
+}
+
+#restart-game {
+    font-size: 3em;
+    padding-top: 0.5em;
+    cursor: pointer;
 }
 
 .container {
@@ -57,6 +64,18 @@ body {
 }
 
 .upcoming-grid div {
+    height: 20px;
+    width: 20px;
+}
+
+.hold-grid {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.hold-grid div {
     height: 20px;
     width: 20px;
 }

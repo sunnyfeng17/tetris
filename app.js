@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
    
     const tetrisGrid = document.querySelector('.tetris-grid');
     const upcomingGrid = document.querySelector('.upcoming-grid');
+    const holdGrid = document.querySelector('.hold-grid');
 
     // Create 10 x 20 grid for main game
     for (let i = 0; i < 200; i++) {
@@ -19,11 +20,18 @@ document.addEventListener('DOMContentLoaded', () => {
     for (let i = 0; i < 16; i++) {
         upcomingGrid.appendChild(document.createElement('div'));
     }
+    // Create 4 x 4 grid for displaying hold tetromino
+    for (let i = 0; i < 16; i++) {
+        holdGrid.appendChild(document.createElement('div'));
+    }
 
     let squares = Array.from(document.querySelectorAll('.tetris-grid div'));
     const upcomingSquares = document.querySelectorAll('.upcoming-grid div');
+    const holdSquares = document.querySelectorAll('.hold-grid div');
 
     const startPauseBtn = document.querySelector('#start-pause-game');
+    const restartBtn = document.querySelector('#restart-game');
+
     const displayScore = document.querySelector('#score');
     const displayLine = document.querySelector('#line');
 
@@ -37,6 +45,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let playing = false;
     let gameover = false;
+
+    let holdTetromino = null;
+    let temp = null;
+    let tempPos;
     
     const colours = [
         'url(images/blue.png)',
@@ -131,6 +143,12 @@ document.addEventListener('DOMContentLoaded', () => {
             else if (e.keyCode === 40) {
                 moveDown();
             }
+            else if (e.keyCode === 16) {
+                hold();
+            }
+            else if (e.keyCode === 32) {
+                straightDown();
+            }
         }
     }
     
@@ -158,7 +176,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-
     function moveLeft() {
         undraw()
         const isAtLeftEdge = curr.some(i => (currPos + i) % w === 0)
@@ -182,6 +199,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         draw();
     }
+
+    function straightDown() {
+        undraw();
+        while (!(curr.some(i => squares[currPos + i + w].classList.contains('taken')))) {
+            currPos += w; 
+        }
+        currPos -= w;
+        freeze();
+}
     
     function rotate() {
         undraw();
@@ -211,9 +237,37 @@ document.addEventListener('DOMContentLoaded', () => {
         [1, displayW  + 1, displayW  * 2 + 1, displayW  * 3 + 1] // I
     ]
 
+    function hold() {
+        temp = r;
+        curr.forEach(i => {
+            squares[currPos + i].style.backgroundImage = '';
+        })
+        if (holdTetromino != null) {
+            holdSquares.forEach(s => {
+                s.style.backgroundImage = '';
+            })
+        }
+        upcomingTetrominoes[temp].forEach(i => {
+            holdSquares[displayI + i].style.backgroundImage = colours[temp];
+        })
+        if (holdTetromino != null) {
+            r = holdTetromino;
+        }
+        else { 
+            r = nextR
+        }
+        holdTetromino = temp;
+        curr = tetrominoes[r][currRotate];
+        currPos = 4;
+        draw();
+        displayShape();
+        addScore();
+        gameOver();
+    }
+
     function displayShape() {
         upcomingSquares.forEach(s => {
-            s.style.backgroundImage = ''
+            s.style.backgroundImage = '';
         })
         upcomingTetrominoes[nextR].forEach(i => {
             upcomingSquares[displayI + i].style.backgroundImage = colours[nextR];
@@ -223,14 +277,20 @@ document.addEventListener('DOMContentLoaded', () => {
     startPauseBtn.addEventListener('click', () => {
         if (!gameover) {
             if (playing) {
-                pauseGame()
+                pauseGame();
             }
             else {
-                startGame()
+                startGame();
             }
         }
         else { 
-            restartGame()
+            restartGame();
+        }
+    })
+
+    restartBtn.addEventListener('click', () => {
+        if (confirm("Restart Game?")) {
+            restartGame();
         }
     })
 
@@ -253,16 +313,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function restartGame() {
+        playing = true;
+        gameover = false;
+        // Clear grid
         const toClear = document.querySelectorAll('.main.taken');
         toClear.forEach(i => {
             i.classList.remove('taken');
             i.style.backgroundImage = ''
         })
-        gameover = false;
+        // Reset Scores
         score = 0;
         linesCleared = 0;
         displayScore.innerHTML = score;
         displayLine.innerHTML = linesCleared;
+        // Reset Tetromino
+        curr.forEach(i => {
+            squares[currPos + i].style.backgroundImage = '';
+        })
+        r = Math.floor(Math.random() * tetrominoes.length);
+        curr = tetrominoes[r][currRotate];
+        currPos = 4;
         startGame();
     }
 
@@ -286,16 +356,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function gameOver() {
-        if (curr.some(i => squares[currPos + i].classList.contains('taken'))){
-            startPauseBtn.classList.remove('fa-pause');
-            startPauseBtn.classList.add('fa-play');
+        if (curr.some(i => squares[currPos + i].classList.contains('taken'))) {
             gameover = true;
             playing = false;
+            startPauseBtn.classList.remove('fa-pause');
+            startPauseBtn.classList.add('fa-play');
             displayScore.innerHTML = "<span style='color: red'>GAMEOVER</span>";
             clearInterval(timerId)
         }
     }
-
-
 })
 
