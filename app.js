@@ -35,8 +35,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const displayScore = document.querySelector('#score');
     const displayLine = document.querySelector('#line');
 
-    const w = 10; // Main width
-    const displayW  = 4 // Next width
+    const w = 10;
+    const displayW  = 4
     const displayI  = 0
     let score = 0;
     let linesCleared = 0;
@@ -48,7 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let holdTetromino = null;
     let temp = null;
-    let tempPos;
     
     const colours = [
         'url(images/blue.png)',
@@ -110,6 +109,16 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     const tetrominoes = [lT, jT, zT, sT, tT, oT, iT];
+
+    const upcomingTetrominoes = [
+        [0, displayW , displayW  + 1, displayW  + 2], // L
+        [2, displayW  + 2, displayW  + 1, displayW ], // J
+        [1, 2, displayW , displayW  + 1], // Z
+        [0, 1, displayW  + 1, displayW  + 2], // S
+        [1, displayW , displayW  + 1, displayW  + 2], // T
+        [0, 1, displayW , displayW  + 1], // O
+        [1, displayW  + 1, displayW  * 2 + 1, displayW  * 3 + 1] // I
+    ]
 
     let currPos = 4;
     let currRotate = 0;
@@ -207,7 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         currPos -= w;
         freeze();
-}
+    }
     
     function rotate() {
         undraw();
@@ -227,42 +236,27 @@ document.addEventListener('DOMContentLoaded', () => {
         draw();
     }
 
-    const upcomingTetrominoes = [
-        [0, displayW , displayW  + 1, displayW  + 2], // L
-        [2, displayW  + 2, displayW  + 1, displayW ], // J
-        [1, 2, displayW , displayW  + 1], // Z
-        [0, 1, displayW  + 1, displayW  + 2], // S
-        [1, displayW , displayW  + 1, displayW  + 2], // T
-        [0, 1, displayW , displayW  + 1], // O
-        [1, displayW  + 1, displayW  * 2 + 1, displayW  * 3 + 1] // I
-    ]
-
     function hold() {
         temp = r;
-        curr.forEach(i => {
-            squares[currPos + i].style.backgroundImage = '';
-        })
-        if (holdTetromino != null) {
-            holdSquares.forEach(s => {
-                s.style.backgroundImage = '';
-            })
-        }
-        upcomingTetrominoes[temp].forEach(i => {
-            holdSquares[displayI + i].style.backgroundImage = colours[temp];
-        })
-        if (holdTetromino != null) {
-            r = holdTetromino;
-        }
-        else { 
-            r = nextR
-        }
-        holdTetromino = temp;
+        undraw();
+        displayHold();
+        r = (holdTetromino != null) ? holdTetromino : nextR
         curr = tetrominoes[r][currRotate];
         currPos = 4;
+        holdTetromino = temp;
         draw();
         displayShape();
         addScore();
         gameOver();
+    }
+
+    function displayHold() {
+        holdSquares.forEach(s => {
+            s.style.backgroundImage = '';
+        })
+        upcomingTetrominoes[temp].forEach(i => {
+            holdSquares[displayI + i].style.backgroundImage = colours[temp];
+        }) 
     }
 
     function displayShape() {
@@ -296,6 +290,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function startGame() {
         playing = true;
+        gameover = false;
         startPauseBtn.classList.remove('fa-play');
         startPauseBtn.classList.add('fa-pause');
         draw();
@@ -306,6 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function pauseGame() {
         playing = false;
+        gameover = false;
         startPauseBtn.classList.remove('fa-pause');
         startPauseBtn.classList.add('fa-play');
         clearInterval(timerId);
@@ -315,18 +311,15 @@ document.addEventListener('DOMContentLoaded', () => {
     function restartGame() {
         playing = true;
         gameover = false;
-        // Clear grid
         const toClear = document.querySelectorAll('.main.taken');
         toClear.forEach(i => {
             i.classList.remove('taken');
             i.style.backgroundImage = ''
         })
-        // Reset Scores
         score = 0;
         linesCleared = 0;
         displayScore.innerHTML = score;
         displayLine.innerHTML = linesCleared;
-        // Reset Tetromino
         curr.forEach(i => {
             squares[currPos + i].style.backgroundImage = '';
         })
@@ -363,6 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
             startPauseBtn.classList.add('fa-play');
             displayScore.innerHTML = "<span style='color: red'>GAMEOVER</span>";
             clearInterval(timerId)
+            timerId = null;
         }
     }
 })
